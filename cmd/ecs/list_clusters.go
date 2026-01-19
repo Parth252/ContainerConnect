@@ -18,7 +18,7 @@ var listClustersCmd = &cobra.Command{
 }
 
 func listClusters() error {
-	fmt.Println("🔍 Fetching ECS clusters...")
+	fmt.Println("Fetching ECS clusters...")
 
 	ctx := context.Background()
 
@@ -39,7 +39,7 @@ func listClusters() error {
 		return nil
 	}
 
-	fmt.Println("\n📦 ECS Clusters:")
+	fmt.Println("\n ECS Clusters:")
 	fmt.Println("-------------------------")
 	for _, arn := range output.ClusterArns {
 		fmt.Printf("- %s\n", arn)
