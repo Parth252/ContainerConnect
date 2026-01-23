@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go-v2/config"
-	awsecs "github.com/aws/aws-sdk-go-v2/service/ecs"
+	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	"github.com/spf13/cobra"
 )
 
@@ -27,9 +27,9 @@ func listClusters() error {
 		return fmt.Errorf("failed to load AWS configuration: %w", err)
 	}
 
-	client := awsecs.NewFromConfig(cfg)
+	client := ecs.NewFromConfig(cfg)
 
-	output, err := client.ListClusters(ctx, &awsecs.ListClustersInput{})
+	output, err := client.ListClusters(ctx, &ecs.ListClustersInput{})
 	if err != nil {
 		return fmt.Errorf("failed to list ECS clusters: %w", err)
 	}
