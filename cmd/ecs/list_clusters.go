@@ -10,7 +10,7 @@ import (
 )
 
 var listClustersCmd = &cobra.Command{
-	Use:   "list-clusters",
+	Use:   "clusters",
 	Short: "List all ECS clusters in the configured AWS account",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return listClusters()
@@ -50,5 +50,5 @@ func listClusters() error {
 }
 
 func init() {
-	EcsCmd.AddCommand(listClustersCmd)
+	listCmd.AddCommand(listClustersCmd)
 }
