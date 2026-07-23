@@ -1,4 +1,4 @@
-package ecs
+package list
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 
 var cluster string
 
-var listServicesCmd = &cobra.Command{
+var servicesCmd = &cobra.Command{
 	Use:   "services",
 	Short: "List ECS services in a cluster",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -31,10 +31,7 @@ func listServices(cluster string) error {
 	}
 
 	client := ecs.NewFromConfig(cfg)
-
-	output, err := client.ListServices(ctx, &ecs.ListServicesInput{
-		Cluster: &cluster,
-	})
+	output, err := client.ListServices(ctx, &ecs.ListServicesInput{Cluster: &cluster})
 	if err != nil {
 		return fmt.Errorf("failed to list ECS services: %w", err)
 	}
@@ -52,7 +49,7 @@ func listServices(cluster string) error {
 	return nil
 }
 
-func init() {
-	listServicesCmd.Flags().StringVarP(&cluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
-	listCmd.AddCommand(listServicesCmd)
+func RegisterServices(parent *cobra.Command) {
+	servicesCmd.Flags().StringVarP(&cluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
+	parent.AddCommand(servicesCmd)
 }

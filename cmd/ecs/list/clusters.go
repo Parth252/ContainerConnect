@@ -1,4 +1,4 @@
-package ecs
+package list
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var listClustersCmd = &cobra.Command{
+var clustersCmd = &cobra.Command{
 	Use:   "clusters",
 	Short: "List all ECS clusters in the configured AWS account",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -21,14 +21,12 @@ func listClusters() error {
 	fmt.Println("Fetching ECS clusters...")
 
 	ctx := context.Background()
-
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to load AWS configuration: %w", err)
 	}
 
 	client := ecs.NewFromConfig(cfg)
-
 	output, err := client.ListClusters(ctx, &ecs.ListClustersInput{})
 	if err != nil {
 		return fmt.Errorf("failed to list ECS clusters: %w", err)
@@ -39,7 +37,7 @@ func listClusters() error {
 		return nil
 	}
 
-	fmt.Println("\n ECS Clusters:")
+	fmt.Println("\nECS Clusters:")
 	fmt.Println("-------------------------")
 	for _, arn := range output.ClusterArns {
 		fmt.Printf("- %s\n", arn)
@@ -49,6 +47,6 @@ func listClusters() error {
 	return nil
 }
 
-func init() {
-	listCmd.AddCommand(listClustersCmd)
+func RegisterClusters(parent *cobra.Command) {
+	parent.AddCommand(clustersCmd)
 }
