@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/ecs"
+	awshlp "github.com/Parth252/ContainerConnect/internal/aws"
 	"github.com/spf13/cobra"
 )
 
@@ -21,13 +20,12 @@ func listClusters() error {
 	fmt.Println("Fetching ECS clusters...")
 
 	ctx := context.Background()
-	cfg, err := config.LoadDefaultConfig(ctx)
+	client, err := awshlp.LoadECSClient(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to load AWS configuration: %w", err)
+		return err
 	}
 
-	client := ecs.NewFromConfig(cfg)
-	output, err := client.ListClusters(ctx, &ecs.ListClustersInput{})
+	output, err := client.ListClusters(ctx, nil)
 	if err != nil {
 		return fmt.Errorf("failed to list ECS clusters: %w", err)
 	}

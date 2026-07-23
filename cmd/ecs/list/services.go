@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/config"
+	awshlp "github.com/Parth252/ContainerConnect/internal/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 	"github.com/spf13/cobra"
 )
@@ -24,13 +24,11 @@ var servicesCmd = &cobra.Command{
 
 func listServices(cluster string) error {
 	ctx := context.Background()
-
-	cfg, err := config.LoadDefaultConfig(ctx)
+	client, err := awshlp.LoadECSClient(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to load AWS configuration: %w", err)
+		return err
 	}
 
-	client := ecs.NewFromConfig(cfg)
 	output, err := client.ListServices(ctx, &ecs.ListServicesInput{Cluster: &cluster})
 	if err != nil {
 		return fmt.Errorf("failed to list ECS services: %w", err)
