@@ -1,7 +1,6 @@
 package list
 
 import (
-	"context"
 	"fmt"
 
 	awshlp "github.com/Parth252/ContainerConnect/internal/aws"
@@ -19,8 +18,7 @@ var clustersCmd = &cobra.Command{
 func listClusters() error {
 	fmt.Println("Fetching ECS clusters...")
 
-	ctx := context.Background()
-	client, err := awshlp.LoadECSClient(ctx)
+	client, ctx, err := awshlp.LoadECSClient()
 	if err != nil {
 		return err
 	}

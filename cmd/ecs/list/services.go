@@ -1,7 +1,6 @@
 package list
 
 import (
-	"context"
 	"fmt"
 
 	awshlp "github.com/Parth252/ContainerConnect/internal/aws"
@@ -23,8 +22,7 @@ var servicesCmd = &cobra.Command{
 }
 
 func listServices(cluster string) error {
-	ctx := context.Background()
-	client, err := awshlp.LoadECSClient(ctx)
+	client, ctx, err := awshlp.LoadECSClient()
 	if err != nil {
 		return err
 	}
