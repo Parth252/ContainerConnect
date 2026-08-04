@@ -3,6 +3,7 @@ package ecs
 import (
 	"fmt"
 
+	"github.com/Parth252/ContainerConnect/cmd/ecs/list"
 	"github.com/spf13/cobra"
 )
 
@@ -13,4 +14,8 @@ var EcsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("ECS command selected — use a subcommand like 'list' or 'exec'")
 	},
+}
+
+func init() {
+	list.Register(EcsCmd)
 }
