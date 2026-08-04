@@ -4,6 +4,7 @@ A CLI tool written in Go that allows you to interact with running containers in 
 ## Features
 
 - Connect to running ECS containers via AWS ExecuteCommand
+- store default ecs configurations in .ccrc file on linux systems.
 - List ECS clusters and services
 - (Future) Connect to EKS pods
 - Modular and extensible CLI structure built with [Cobra](https://github.com/spf13/cobra)

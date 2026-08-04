@@ -1,4 +1,4 @@
-package cmd
+package ecs
 
 import (
 	"fmt"
@@ -7,14 +7,10 @@ import (
 )
 
 // ecsCmd represents the "ecs" command under root
-var ecsCmd = &cobra.Command{
+var EcsCmd = &cobra.Command{
 	Use:   "ecs",
 	Short: "Commands related to AWS ECS clusters and services",
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("ECS command selected — use a subcommand like 'list' or 'exec'")
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(ecsCmd)
 }
