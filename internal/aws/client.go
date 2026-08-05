@@ -8,12 +8,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ecs"
 )
 
-func LoadECSClient() (*ecs.Client, context.Context, error) {
-	ctx := context.Background()
+func LoadECSClient(ctx context.Context) (*ecs.Client, error) {
 	cfg, err := config.LoadDefaultConfig(ctx)
 	if err != nil {
-		return nil, nil, fmt.Errorf("failed to load AWS configuration: %w", err)
+		return nil, fmt.Errorf("failed to load AWS configuration: %w", err)
 	}
 
-	return ecs.NewFromConfig(cfg), ctx, nil
+	return ecs.NewFromConfig(cfg), nil
 }

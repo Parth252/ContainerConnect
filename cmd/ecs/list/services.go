@@ -1,10 +1,10 @@
 package list
 
 import (
+	"context"
 	"fmt"
 
-	awshlp "github.com/Parth252/ContainerConnect/internal/aws"
-	"github.com/aws/aws-sdk-go-v2/service/ecs"
+	ecshlp "github.com/Parth252/ContainerConnect/internal/ecs"
 	"github.com/spf13/cobra"
 )
 
@@ -17,28 +17,28 @@ var servicesCmd = &cobra.Command{
 		if cluster == "" {
 			return fmt.Errorf("cluster name or ARN is required (--cluster)")
 		}
-		return listServices(cluster)
+		return listServices(cmd.Context(), cluster)
 	},
 }
 
-func listServices(cluster string) error {
-	client, ctx, err := awshlp.LoadECSClient()
+func listServices(ctx context.Context, cluster string) error {
+	discovery, err := ecshlp.LoadDiscovery(ctx)
 	if err != nil {
 		return err
 	}
 
-	output, err := client.ListServices(ctx, &ecs.ListServicesInput{Cluster: &cluster})
+	services, err := discovery.ListServices(ctx, cluster)
 	if err != nil {
-		return fmt.Errorf("failed to list ECS services: %w", err)
+		return err
 	}
 
-	if len(output.ServiceArns) == 0 {
+	if len(services) == 0 {
 		fmt.Println("No ECS services found in this cluster.")
 		return nil
 	}
 
 	fmt.Println("ECS Services:")
-	for _, arn := range output.ServiceArns {
+	for _, arn := range services {
 		fmt.Println(arn)
 	}
 
