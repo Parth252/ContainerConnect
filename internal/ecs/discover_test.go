@@ -6,13 +6,16 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	awsecs "github.com/aws/aws-sdk-go-v2/service/ecs"
+	"github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
 type fakeClient struct {
 	clusters *awsecs.ListClustersOutput
 	services *awsecs.ListServicesOutput
 	tasks    *awsecs.ListTasksOutput
+	describe *awsecs.DescribeTasksOutput
 	err      error
 }
 
@@ -26,6 +29,10 @@ func (f *fakeClient) ListServices(context.Context, *awsecs.ListServicesInput, ..
 
 func (f *fakeClient) ListTasks(context.Context, *awsecs.ListTasksInput, ...func(*awsecs.Options)) (*awsecs.ListTasksOutput, error) {
 	return f.tasks, f.err
+}
+
+func (f *fakeClient) DescribeTasks(context.Context, *awsecs.DescribeTasksInput, ...func(*awsecs.Options)) (*awsecs.DescribeTasksOutput, error) {
+	return f.describe, f.err
 }
 
 func TestDiscoveryListsResources(t *testing.T) {
@@ -48,6 +55,37 @@ func TestDiscoveryListsResources(t *testing.T) {
 	tasks, err := discovery.ListTasks(context.Background(), "cluster-1")
 	if err != nil || !reflect.DeepEqual(tasks, []string{"task-1"}) {
 		t.Fatalf("ListTasks() = %v, %v", tasks, err)
+	}
+}
+
+func TestDiscoveryListsContainersInTask(t *testing.T) {
+	discovery := NewDiscovery(&fakeClient{
+		describe: &awsecs.DescribeTasksOutput{
+			Tasks: []types.Task{{
+				Containers: []types.Container{
+					{Name: aws.String("application")},
+					{Name: aws.String("sidecar")},
+				},
+			}},
+		},
+	})
+
+	containers, err := discovery.ListContainers(context.Background(), "cluster-1", "task-1")
+	if err != nil || !reflect.DeepEqual(containers, []string{"application", "sidecar"}) {
+		t.Fatalf("ListContainers() = %v, %v", containers, err)
+	}
+}
+
+func TestDiscoveryReturnsDescribeTaskFailures(t *testing.T) {
+	discovery := NewDiscovery(&fakeClient{
+		describe: &awsecs.DescribeTasksOutput{
+			Failures: []types.Failure{{Reason: aws.String("MISSING")}},
+		},
+	})
+
+	_, err := discovery.ListContainers(context.Background(), "cluster-1", "missing-task")
+	if err == nil || err.Error() != "describe ECS task \"missing-task\": MISSING" {
+		t.Fatalf("expected task failure error, got %v", err)
 	}
 }
 
