@@ -69,16 +69,16 @@ func registerClusters(parent *cobra.Command) {
 
 //Services: List all ECS services in a cluster
 
-var servicesCluster string
+var inputCluster string
 
 var servicesCmd = &cobra.Command{
 	Use:   "services",
 	Short: "List ECS services in a cluster",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if servicesCluster == "" {
+		if inputCluster == "" {
 			return fmt.Errorf("cluster name or ARN is required (--cluster)")
 		}
-		return listServices(cmd.Context(), servicesCluster)
+		return listServices(cmd.Context(), inputCluster)
 	},
 }
 
@@ -107,22 +107,20 @@ func listServices(ctx context.Context, cluster string) error {
 }
 
 func registerServices(parent *cobra.Command) {
-	servicesCmd.Flags().StringVarP(&servicesCluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
+	servicesCmd.Flags().StringVarP(&inputCluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
 	parent.AddCommand(servicesCmd)
 }
 
 //Tasks: List all ECS tasks in a cluster
 
-var tasksCluster string
-
 var tasksCmd = &cobra.Command{
 	Use:   "tasks",
 	Short: "List ECS tasks in a cluster",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		if tasksCluster == "" {
+		if inputCluster == "" {
 			return fmt.Errorf("cluster name or ARN is required (--cluster)")
 		}
-		return listTasks(cmd.Context(), tasksCluster)
+		return listTasks(cmd.Context(), inputCluster)
 	},
 }
 
@@ -151,6 +149,6 @@ func listTasks(ctx context.Context, cluster string) error {
 }
 
 func registerTasks(parent *cobra.Command) {
-	tasksCmd.Flags().StringVarP(&tasksCluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
+	tasksCmd.Flags().StringVarP(&inputCluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
 	parent.AddCommand(tasksCmd)
 }
