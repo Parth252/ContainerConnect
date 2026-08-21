@@ -1,4 +1,4 @@
-package list
+package ecs
 
 import (
 	"testing"

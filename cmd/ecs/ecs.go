@@ -3,7 +3,6 @@ package ecs
 import (
 	"fmt"
 
-	"github.com/Parth252/ContainerConnect/cmd/ecs/list"
 	"github.com/spf13/cobra"
 )
 
@@ -17,5 +16,5 @@ var EcsCmd = &cobra.Command{
 }
 
 func init() {
-	list.Register(EcsCmd)
+	Register(EcsCmd)
 }
