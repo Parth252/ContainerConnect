@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var ListCmd = &cobra.Command{
+var listCmd = &cobra.Command{
 	Use:   "list",
 	Short: "Used to list ECS resources like clusters, services, and tasks",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -17,10 +17,10 @@ var ListCmd = &cobra.Command{
 }
 
 func RegisterListCmd(parent *cobra.Command) {
-	parent.AddCommand(ListCmd)
-	registerClusters(ListCmd)
-	registerServices(ListCmd)
-	registerTasks(ListCmd)
+	parent.AddCommand(listCmd)
+	registerClusters(listCmd)
+	registerServices(listCmd)
+	registerTasks(listCmd)
 }
 
 // Implementations
