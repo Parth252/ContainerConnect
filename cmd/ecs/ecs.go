@@ -16,5 +16,5 @@ var EcsCmd = &cobra.Command{
 }
 
 func init() {
-	Register(EcsCmd)
+	RegisterListCmd(EcsCmd)
 }

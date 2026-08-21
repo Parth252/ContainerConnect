@@ -16,11 +16,11 @@ var ListCmd = &cobra.Command{
 	},
 }
 
-func Register(parent *cobra.Command) {
+func RegisterListCmd(parent *cobra.Command) {
 	parent.AddCommand(ListCmd)
-	RegisterClusters(ListCmd)
-	RegisterServices(ListCmd)
-	RegisterTasks(ListCmd)
+	registerClusters(ListCmd)
+	registerServices(ListCmd)
+	registerTasks(ListCmd)
 }
 
 // Implementations
@@ -63,7 +63,7 @@ func listClusters(ctx context.Context) error {
 	return nil
 }
 
-func RegisterClusters(parent *cobra.Command) {
+func registerClusters(parent *cobra.Command) {
 	parent.AddCommand(clustersCmd)
 }
 
@@ -106,7 +106,7 @@ func listServices(ctx context.Context, cluster string) error {
 	return nil
 }
 
-func RegisterServices(parent *cobra.Command) {
+func registerServices(parent *cobra.Command) {
 	servicesCmd.Flags().StringVarP(&servicesCluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
 	parent.AddCommand(servicesCmd)
 }
@@ -150,7 +150,7 @@ func listTasks(ctx context.Context, cluster string) error {
 	return nil
 }
 
-func RegisterTasks(parent *cobra.Command) {
+func registerTasks(parent *cobra.Command) {
 	tasksCmd.Flags().StringVarP(&tasksCluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
 	parent.AddCommand(tasksCmd)
 }
