@@ -1,0 +1,313 @@
+ContainerConnect - Project Goals
+================================
+
+Goal
+----
+Build a developer-friendly CLI for quickly debugging and interacting with
+containerized workloads running on AWS ECS and EKS.
+
+The core idea:
+
+    "I want to debug this service."
+
+rather than:
+
+    "I need to find the task ARN, container name, and construct an
+     ECS ExecuteCommand invocation."
+
+--------------------------------------------------
+PHASE 1 - ECS FOUNDATION
+--------------------------------------------------
+
+[✓] Bootstrap Go project
+[✓] Set up Cobra CLI
+[✓] Create root command
+[✓] Create ECS command
+[✓] Create ECS list command
+[✓] List ECS clusters
+[✓] List ECS services
+[ ] List ECS tasks
+[ ] Describe ECS service
+[ ] Describe ECS task
+[ ] Identify containers belonging to a task
+
+--------------------------------------------------
+PHASE 2 - ECS EXEC
+--------------------------------------------------
+
+[ ] Create "cc ecs exec" command
+
+Target usage:
+
+    cc ecs exec --cluster <cluster> --service <service>
+
+The command should:
+
+[ ] Resolve the requested service
+[ ] Verify the service exists
+[ ] Verify ECS Exec is enabled
+[ ] Find RUNNING tasks belonging to the service
+[ ] Automatically select a suitable task
+[ ] Identify the application container
+[ ] Handle services with multiple containers
+[ ] Determine an appropriate shell
+[ ] Call ECS ExecuteCommand
+[ ] Establish the SSM session
+[ ] Launch the local Session Manager plugin
+[ ] Provide an interactive shell inside the container
+
+--------------------------------------------------
+PHASE 3 - MAKE EXEC SMART
+--------------------------------------------------
+
+[ ] Automatically select a healthy RUNNING task
+[ ] Allow explicit task selection when required
+[ ] Automatically identify the primary application container
+[ ] Allow --container override
+[ ] Automatically detect /bin/bash vs /bin/sh
+[ ] Give useful errors when a shell is unavailable
+[ ] Give useful errors when ECS Exec is disabled
+[ ] Give useful errors when no tasks are running
+
+Example:
+
+    cc ecs exec --cluster production --service payments
+
+Should hide all of the following from the user:
+
+    cluster
+    task ARN
+    container name
+    task definition revision
+    ECS Exec configuration
+    SSM session details
+
+--------------------------------------------------
+PHASE 4 - DEBUGGING EXPERIENCE
+--------------------------------------------------
+
+Goal:
+
+    "cc ecs debug <service>"
+
+should become a higher-level debugging workflow.
+
+[ ] Show service information before connecting
+[ ] Show selected task
+[ ] Show selected container
+[ ] Show container image
+[ ] Show task status
+[ ] Connect to the container
+
+Potential debugging commands:
+
+    cc ecs debug payments
+
+    cc ecs logs payments
+
+    cc ecs shell payments
+
+    cc ecs inspect payments
+
+--------------------------------------------------
+PHASE 5 - DEBUGGING TOOLS
+--------------------------------------------------
+
+Inside the debugging workflow:
+
+[ ] Open interactive shell
+[ ] View container logs
+[ ] View environment variables
+[ ] View running processes
+[ ] Inspect network configuration
+[ ] Inspect ports
+[ ] Inspect resource usage
+[ ] Inspect task/container metadata
+[ ] Provide useful diagnostic information
+
+Potential future interactive UI:
+
+    ContainerConnect
+
+    Service: payments
+    Task: payments-8f72...
+    Container: payments
+    Image: payments:v1.42.7
+    Status: RUNNING
+
+    1. Shell
+    2. Logs
+    3. Environment
+    4. Processes
+    5. Network
+    6. Resources
+    7. Exit
+
+--------------------------------------------------
+PHASE 6 - BETTER CLI EXPERIENCE
+--------------------------------------------------
+
+[ ] Clean human-readable output
+[ ] Consistent error messages
+[ ] --help documentation
+[ ] Shell completion
+[ ] Support useful flags
+[ ] Support AWS profiles
+[ ] Support AWS regions
+[ ] Support JSON output
+[ ] Support non-interactive commands
+[ ] Improve command discoverability
+
+Example:
+
+    cc ecs list clusters
+    cc ecs list services --cluster production
+    cc ecs list tasks --cluster production --service payments
+    cc ecs exec --cluster production --service payments
+    cc ecs debug payments
+
+--------------------------------------------------
+PHASE 7 - AWS CODE STRUCTURE
+--------------------------------------------------
+
+[ ] Centralize AWS configuration
+[ ] Create reusable ECS client
+[ ] Separate CLI logic from AWS logic
+[ ] Create reusable service/task/container resolution functions
+[ ] Handle AWS API pagination
+[ ] Improve error handling
+[ ] Add unit tests
+[ ] Add integration tests where practical
+
+Potential structure:
+
+    cmd/
+        root.go
+        ecs/
+            ecs.go
+            list.go
+            list_clusters.go
+            list_services.go
+            list_tasks.go
+            exec.go
+            debug.go
+
+    internal/
+        aws/
+        ecs/
+        eks/
+
+--------------------------------------------------
+PHASE 8 - EKS SUPPORT
+--------------------------------------------------
+
+Goal:
+
+Provide a similar debugging experience for Kubernetes workloads.
+
+[ ] Add EKS command
+[ ] Discover EKS clusters
+[ ] List namespaces
+[ ] List deployments
+[ ] List pods
+[ ] Resolve deployment -> pod -> container
+[ ] Implement pod exec
+[ ] Support kubectl-compatible shell behavior
+[ ] Provide a unified debugging experience
+
+Potential usage:
+
+    cc eks list clusters
+    cc eks list pods --cluster production
+    cc eks exec --cluster production --namespace payments --pod payments-xyz
+    cc eks debug payments
+
+--------------------------------------------------
+PHASE 9 - UNIFIED DEBUGGING
+--------------------------------------------------
+
+Long-term goal:
+
+Make the underlying platform mostly irrelevant to the developer.
+
+Examples:
+
+    cc debug ecs payments
+
+    cc debug eks payments
+
+Potentially:
+
+    cc debug payments
+
+ContainerConnect determines the appropriate workload/platform
+and provides the developer with a debugging environment.
+
+--------------------------------------------------
+PHASE 10 - QUALITY / RELEASE
+--------------------------------------------------
+
+[ ] Add proper logging
+[ ] Add configuration management
+[ ] Add CI pipeline
+[ ] Add automated tests
+[ ] Add cross-platform builds
+[ ] Add release binaries
+[ ] Add version information
+[ ] Add shell completion installation
+[ ] Document required AWS IAM permissions
+[ ] Document ECS Exec prerequisites
+[ ] Document EKS prerequisites
+[ ] Add examples to README
+[ ] Create GitHub releases
+
+--------------------------------------------------
+IMPORTANT DESIGN PRINCIPLE
+--------------------------------------------------
+
+Do not build features just because they are technically possible.
+
+The goal is to reduce the number of things a developer has to think about
+when debugging a running container.
+
+Prefer:
+
+    cc ecs debug payments
+
+over:
+
+    aws ecs list-tasks ...
+    aws ecs describe-tasks ...
+    aws ecs execute-command ...
+    ...
+
+ContainerConnect should handle the infrastructure details and expose
+a simple developer-oriented workflow.
+
+--------------------------------------------------
+CURRENT POSITION
+--------------------------------------------------
+
+Completed:
+
+    Bootstrap project
+    Cobra setup
+    Root command
+    ECS command
+    List command
+    List ECS clusters
+    List ECS services
+
+Currently next:
+
+    [ ] List ECS tasks
+
+Then:
+
+    [ ] Build ECS Exec
+
+The first major milestone is:
+
+    cc ecs exec --cluster <cluster> --service <service>
+
+which should drop the user directly into a running application container.
