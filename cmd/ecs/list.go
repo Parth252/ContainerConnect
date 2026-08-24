@@ -21,6 +21,7 @@ func RegisterListCmd(parent *cobra.Command) {
 	registerClusters(listCmd)
 	registerServices(listCmd)
 	registerTasks(listCmd)
+	registerContainers(listCmd)
 }
 
 // Implementations
@@ -70,6 +71,7 @@ func registerClusters(parent *cobra.Command) {
 //Services: List all ECS services in a cluster
 
 var inputCluster string
+var inputTask string
 
 var servicesCmd = &cobra.Command{
 	Use:   "services",
@@ -151,4 +153,49 @@ func listTasks(ctx context.Context, cluster string) error {
 func registerTasks(parent *cobra.Command) {
 	tasksCmd.Flags().StringVarP(&inputCluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
 	parent.AddCommand(tasksCmd)
+}
+
+//Containers: List all containers in a task
+
+var containersCmd = &cobra.Command{
+	Use:   "containers",
+	Short: "List containers in a task",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		if inputCluster == "" || inputTask == "" {
+			return fmt.Errorf("both cluster and task are required (--cluster and --task)")
+		}
+		return listContainers(cmd.Context(), inputCluster, inputTask)
+	},
+}
+
+func listContainers(ctx context.Context, cluster string, task string) error {
+	discovery, err := ecshlp.LoadDiscovery(ctx)
+	if err != nil {
+		return err
+	}
+
+	containers, err := discovery.ListContainers(ctx, cluster, task)
+	if err != nil {
+		return err
+	}
+
+	if len(containers) == 0 {
+		fmt.Println("No containers found in this task.")
+		return nil
+	}
+
+	fmt.Println("Containers in Task:")
+	for _, container := range containers {
+		fmt.Printf("- %s\n", container)
+	}
+
+	return nil
+}
+
+func registerContainers(parent *cobra.Command) {
+
+	containersCmd.Flags().StringVarP(&inputCluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
+	containersCmd.Flags().StringVarP(&inputTask, "task", "t", "", "ECS task ID or ARN (required)")
+
+	parent.AddCommand(containersCmd)
 }
