@@ -19,3 +19,9 @@ func init() {
 	RegisterListCmd(EcsCmd)
 	RegisterExecCmd(EcsCmd)
 }
+
+//implementations
+
+var inputCluster string
+var inputTask string
+var inputContainer string

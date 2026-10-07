@@ -70,9 +70,6 @@ func registerClusters(parent *cobra.Command) {
 
 //Services: List all ECS services in a cluster
 
-var inputCluster string
-var inputTask string
-
 var servicesCmd = &cobra.Command{
 	Use:   "services",
 	Short: "List ECS services in a cluster",
