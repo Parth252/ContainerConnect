@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	ecshlp "github.com/Parth252/ContainerConnect/internal/ecs"
+	ecshlp "github.com/Parth252/ContainerConnect/internal/ecshlp"
 	"github.com/spf13/cobra"
 )
 
