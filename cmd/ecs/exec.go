@@ -3,7 +3,7 @@ package ecs
 import (
 	"context"
 
-	ecshlp "github.com/Parth252/ContainerConnect/internal/ecshlp"
+	"github.com/Parth252/ContainerConnect/internal/ecshlp"
 	"github.com/spf13/cobra"
 )
 
