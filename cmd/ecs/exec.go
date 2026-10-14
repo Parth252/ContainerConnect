@@ -22,13 +22,14 @@ var ExecCmd = &cobra.Command{
 }
 
 func RegisterExecCmd() {
+	EcsCmd.AddCommand(ExecCmd)
+
 	ExecCmd.Flags().StringVarP(&inputCluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
 	ExecCmd.Flags().StringVarP(&inputContainer, "container", "n", "", "ECS container name (required)")
 
 	ExecCmd.MarkFlagRequired("cluster")
 	ExecCmd.MarkFlagRequired("container")
 
-	EcsCmd.AddCommand(ExecCmd)
 }
 
 // Implementations
