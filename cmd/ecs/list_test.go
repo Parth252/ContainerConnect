@@ -8,7 +8,7 @@ import (
 
 func TestRegisterAddsExpectedSubcommands(t *testing.T) {
 	parent := &cobra.Command{Use: "ecs"}
-	RegisterListCmd(parent)
+	RegisterListCmd()
 
 	var listCmd *cobra.Command
 	for _, cmd := range parent.Commands() {

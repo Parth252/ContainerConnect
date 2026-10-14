@@ -16,12 +16,12 @@ var listCmd = &cobra.Command{
 	},
 }
 
-func RegisterListCmd(parent *cobra.Command) {
-	parent.AddCommand(listCmd)
-	registerClusters(listCmd)
-	registerServices(listCmd)
-	registerTasks(listCmd)
-	registerContainers(listCmd)
+func RegisterListCmd() {
+	EcsCmd.AddCommand(listCmd)
+	registerClusters()
+	registerServices()
+	registerTasks()
+	registerContainers()
 }
 
 // Implementations
@@ -36,8 +36,8 @@ var listClustersCmd = &cobra.Command{
 	},
 }
 
-func registerClusters(parent *cobra.Command) {
-	parent.AddCommand(listClustersCmd)
+func registerClusters() {
+	listCmd.AddCommand(listClustersCmd)
 }
 
 func listClusters(ctx context.Context) error {
@@ -78,10 +78,10 @@ var listServicesCmd = &cobra.Command{
 	},
 }
 
-func registerServices(parent *cobra.Command) {
+func registerServices() {
 	listServicesCmd.Flags().StringVarP(&inputCluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
 	listServicesCmd.MarkFlagRequired("cluster")
-	parent.AddCommand(listServicesCmd)
+	listCmd.AddCommand(listServicesCmd)
 }
 
 func listServices(ctx context.Context, cluster string) error {
@@ -121,9 +121,9 @@ var listTasksCmd = &cobra.Command{
 	},
 }
 
-func registerTasks(parent *cobra.Command) {
+func registerTasks() {
 	listTasksCmd.Flags().StringVarP(&inputCluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
-	parent.AddCommand(listTasksCmd)
+	listCmd.AddCommand(listTasksCmd)
 }
 
 func listTasks(ctx context.Context, cluster string) error {
@@ -163,12 +163,12 @@ var listContainersCmd = &cobra.Command{
 	},
 }
 
-func registerContainers(parent *cobra.Command) {
+func registerContainers() {
 
 	listContainersCmd.Flags().StringVarP(&inputCluster, "cluster", "c", "", "ECS cluster name or ARN (required)")
 	listContainersCmd.Flags().StringVarP(&inputTask, "task", "t", "", "ECS task ID or ARN (required)")
 
-	parent.AddCommand(listContainersCmd)
+	listCmd.AddCommand(listContainersCmd)
 }
 
 func listContainers(ctx context.Context, cluster string, task string) error {
