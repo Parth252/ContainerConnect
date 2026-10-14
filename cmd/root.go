@@ -15,7 +15,10 @@ var RootCmd = &cobra.Command{
 	},
 }
 
-func Execute() {
+func init() {
 	RootCmd.AddCommand(ecs.EcsCmd)
+}
+
+func Execute() {
 	cobra.CheckErr(RootCmd.Execute())
 }
