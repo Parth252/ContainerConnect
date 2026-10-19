@@ -5,29 +5,35 @@ import (
 	"fmt"
 )
 
-func ExecuteCommandInContainer(ctx context.Context, cluster string, task string, container string, command []string) error {
+type ExecHelper struct {
+	inputCluster   string
+	inputTask      string
+	inputContainer string
+}
+
+func LoadExecHelper(inputCluster, inputTask, inputContainer string) *ExecHelper {
+	return &ExecHelper{
+		inputCluster:   inputCluster,
+		inputTask:      inputTask,
+		inputContainer: inputContainer,
+	}
+}
+
+func (e ExecHelper) ExecuteCommandInTask(ctx context.Context, cluster string, task string, container string, command []string) error {
 	discovery, err := LoadDiscovery(ctx)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to load discovery: %w", err)
 	}
 
-	tasks, err := discovery.ListTasks(ctx, cluster)
+	containers, err := discovery.ListContainers(ctx, cluster, task)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to list containers: %w", err)
 	}
 
-	if len(tasks) == 0 {
-		return fmt.Errorf("no ECS tasks found in cluster %s", cluster)
+	if len(containers) > 1 && container == "" {
+		return fmt.Errorf("multiple containers found in task %s please specify a container with --container", task)
 	}
 
-	if task == "" {
-		task = tasks[0] // Default to the first task if not specified
-	}
-
-	fmt.Printf("Executing command in container %s of task %s in cluster %s\n", container, task, cluster)
-
-	// Here you would implement the logic to execute the command in the specified container.
-	// This is a placeholder for demonstration purposes.
 	fmt.Printf("Command to execute: %v\n", command)
 
 	return nil
