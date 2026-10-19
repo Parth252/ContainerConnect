@@ -69,6 +69,8 @@ func (d *Discovery) DescribeTasks(ctx context.Context, cluster string, tasks []s
 	})
 	if err != nil {
 		return nil, fmt.Errorf("describe ECS tasks: %w", err)
+	} else if len(output.Tasks) == 0 {
+		return nil, fmt.Errorf("no tasks found for cluster %s and tasks %v", cluster, tasks)
 	}
 
 	return output, nil

@@ -31,21 +31,19 @@ func (e ExecHelper) ExecuteCommandInTask(ctx context.Context) error {
 	}
 
 	if len(containers) > 1 && e.inputContainer == "" {
-		return fmt.Errorf("multiple containers found in task %s please specify a container with --container", e.inputTask)
+		return fmt.Errorf("multiple containers found in task %s please specify a container with --container, the available containers are: %v", e.inputTask, containers)
+	} else if len(containers) == 1 && e.inputContainer == "" {
+		e.inputContainer = containers[0]
 	}
 
-	taskDescription, err := discovery.DescribeTasks(ctx, e.inputCluster, []string{e.inputTask})
+	taskDescriptions, err := discovery.DescribeTasks(ctx, e.inputCluster, []string{e.inputTask})
 	if err != nil {
 		return err
 	}
 
-	if len(taskDescription.Tasks) == 0 {
-		return fmt.Errorf("task %s not found in cluster %s", e.inputTask, e.inputCluster)
-	}
+	taskDescription := taskDescriptions.Tasks[0]
 
-	task := taskDescription.Tasks[0]
-
-	if !task.EnableExecuteCommand {
+	if !taskDescription.EnableExecuteCommand {
 		return fmt.Errorf(
 			"ECS Exec is not enabled for task %s",
 			e.inputTask,
