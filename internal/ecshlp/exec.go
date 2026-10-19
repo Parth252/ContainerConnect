@@ -34,5 +34,23 @@ func (e ExecHelper) ExecuteCommandInTask(ctx context.Context) error {
 		return fmt.Errorf("multiple containers found in task %s please specify a container with --container", e.inputTask)
 	}
 
+	taskDescription, err := discovery.DescribeTasks(ctx, e.inputCluster, []string{e.inputTask})
+	if err != nil {
+		return err
+	}
+
+	if len(taskDescription.Tasks) == 0 {
+		return fmt.Errorf("task %s not found in cluster %s", e.inputTask, e.inputCluster)
+	}
+
+	task := taskDescription.Tasks[0]
+
+	if !task.EnableExecuteCommand {
+		return fmt.Errorf(
+			"ECS Exec is not enabled for task %s",
+			e.inputTask,
+		)
+	}
+
 	return nil
 }

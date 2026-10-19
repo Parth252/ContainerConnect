@@ -13,7 +13,6 @@ var ExecCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return executeCommandInTask(
 			cmd.Context(),
-			args,
 		)
 	},
 }
@@ -32,7 +31,7 @@ func RegisterExecCmd() {
 
 // Implementations
 
-func executeCommandInTask(ctx context.Context, command []string) error {
+func executeCommandInTask(ctx context.Context) error {
 	execHelper := ecshlp.LoadExecHelper(inputCluster, inputTask, inputContainer)
 	return execHelper.ExecuteCommandInTask(ctx)
 }
