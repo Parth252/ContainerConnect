@@ -34,5 +34,5 @@ func RegisterExecCmd() {
 
 func executeCommandInTask(ctx context.Context, command []string) error {
 	execHelper := ecshlp.LoadExecHelper(inputCluster, inputTask, inputContainer)
-	return execHelper.ExecuteCommandInTask(ctx, inputCluster, inputTask, inputContainer, command)
+	return execHelper.ExecuteCommandInTask(ctx)
 }

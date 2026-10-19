@@ -19,22 +19,20 @@ func LoadExecHelper(inputCluster, inputTask, inputContainer string) *ExecHelper 
 	}
 }
 
-func (e ExecHelper) ExecuteCommandInTask(ctx context.Context, cluster string, task string, container string, command []string) error {
+func (e ExecHelper) ExecuteCommandInTask(ctx context.Context) error {
 	discovery, err := LoadDiscovery(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to load discovery: %w", err)
 	}
 
-	containers, err := discovery.ListContainers(ctx, cluster, task)
+	containers, err := discovery.ListContainers(ctx, e.inputCluster, e.inputTask)
 	if err != nil {
 		return fmt.Errorf("failed to list containers: %w", err)
 	}
 
-	if len(containers) > 1 && container == "" {
-		return fmt.Errorf("multiple containers found in task %s please specify a container with --container", task)
+	if len(containers) > 1 && e.inputContainer == "" {
+		return fmt.Errorf("multiple containers found in task %s please specify a container with --container", e.inputTask)
 	}
-
-	fmt.Printf("Command to execute: %v\n", command)
 
 	return nil
 }
