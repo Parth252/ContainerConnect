@@ -62,22 +62,23 @@ func (d *Discovery) ListTasks(ctx context.Context, cluster string) ([]string, er
 	return output.TaskArns, nil
 }
 
-// ListContainers returns the names of every container in an ECS task.
-func (d *Discovery) ListContainers(ctx context.Context, cluster, task string) ([]string, error) {
+func (d *Discovery) DescribeTasks(ctx context.Context, cluster string, tasks []string) (*awsecs.DescribeTasksOutput, error) {
 	output, err := d.client.DescribeTasks(ctx, &awsecs.DescribeTasksInput{
 		Cluster: &cluster,
-		Tasks:   []string{task},
+		Tasks:   tasks,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("describe ECS task: %w", err)
+		return nil, fmt.Errorf("describe ECS tasks: %w", err)
 	}
 
-	if len(output.Failures) > 0 {
-		failure := output.Failures[0]
-		return nil, fmt.Errorf("describe ECS task %q: %s", task, aws.ToString(failure.Reason))
-	}
-	if len(output.Tasks) == 0 {
-		return nil, fmt.Errorf("describe ECS task %q: task was not found", task)
+	return output, nil
+}
+
+// ListContainers returns the names of every container in an ECS task.
+func (d *Discovery) ListContainers(ctx context.Context, cluster, task string) ([]string, error) {
+	output, err := d.DescribeTasks(ctx, cluster, []string{task})
+	if err != nil {
+		return nil, err
 	}
 
 	containers := make([]string, 0, len(output.Tasks[0].Containers))
