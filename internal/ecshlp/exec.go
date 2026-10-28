@@ -3,6 +3,9 @@ package ecshlp
 import (
 	"context"
 	"fmt"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	ecsTypes "github.com/aws/aws-sdk-go-v2/service/ecs/types"
 )
 
 type ExecHelper struct {
@@ -33,7 +36,7 @@ func (e ExecHelper) ExecuteCommandInTask(ctx context.Context) error {
 
 	if len(containers) > 1 && e.inputContainer == "" {
 		return fmt.Errorf("multiple containers found in task %s please specify a container with --container, the available containers are: %v", e.inputTask, containers)
-	} else if len(containers) == 1 && e.inputContainer == "" {
+	} else if e.inputContainer == "" {
 		e.inputContainer = containers[0]
 	}
 
@@ -52,28 +55,27 @@ func (e ExecHelper) ExecuteCommandInTask(ctx context.Context) error {
 		)
 	}
 
-	// for _, container := range taskDescription.Containers {
-	// 	if aws.ToString(container.Name) != e.inputContainer {
-	// 		continue
-	// 	}
+	for _, container := range taskDescription.Containers {
+		if aws.ToString(container.Name) != e.inputContainer {
+			continue
+		}
 
-	// 	for _, agent := range container.ManagedAgents {
-	// 		if agent.Name == ecsTypes.ManagedAgentNameExecuteCommand {
-	// 			if agent.LastStatus != "RUNNING" {
-	// 				return fmt.Errorf(
-	// 					"ECS Exec agent is not running for container %s (status: %s)",
-	// 					e.inputContainer,
-	// 					agent.LastStatus,
-	// 				)
-	// 			}
+		for _, agent := range container.ManagedAgents {
+			if agent.Name == ecsTypes.ManagedAgentNameExecuteCommandAgent {
+				if *agent.LastStatus != "RUNNING" {
+					return fmt.Errorf(
+						"ECS Exec agent is not running for container %s (status: %s)",
+						e.inputContainer,
+						*agent.LastStatus,
+					)
+				}
 
-	// 			return nil
-	// 		}
-	// 	}
+				return nil
+			}
+		}
 
-	// 	return fmt.Errorf("ECS Exec agent not found for container %s", e.inputContainer)
-	// }
+		return fmt.Errorf("ECS Exec agent not found for container %s", e.inputContainer)
+	}
 
-	// return fmt.Errorf("container %s not found in task %s", e.inputContainer, e.inputTask)
-	return nil
+	return fmt.Errorf("container %s not found in task %s", e.inputContainer, e.inputTask)
 }
