@@ -29,6 +29,14 @@ func (e ExecHelper) ExecuteCommandInTask(ctx context.Context) error {
 	}
 
 	// Validate that the task exists and that the container is specified if there are multiple containers in the task
+	if err := validateContainer(ctx, discovery, e); err != nil {
+		return err
+	}
+	fmt.Printf("Executing command in container %s of task %s in cluster %s\n", e.inputContainer, e.inputTask, e.inputCluster)
+	return nil // Placeholder for actual command execution logic
+}
+
+func validateContainer(ctx context.Context, discovery *Discovery, e ExecHelper) error {
 	containers, err := discovery.ListContainers(ctx, e.inputCluster, e.inputTask)
 	if err != nil {
 		return fmt.Errorf("failed to list containers: %w", err)
